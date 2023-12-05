@@ -17,7 +17,7 @@ class Border {
                 },
                 browser: {
                     defaultPage: "candle://newtab",
-                    enableShortcuts: true,
+                    enableShortcuts: false,
                 },
             };
             this.#Files.bookmarks = [];
@@ -304,7 +304,7 @@ Because of the iframe system some website won't work in this browser (like youtu
 		if(window.extension_browser_kiosk == false){
 			sandbox_vars += ' allow-popups-to-escape-sandbox';
 		}
-		console.log("browser addon: sandbox_vars: ", sandbox_vars);
+		//console.log("browser addon: sandbox_vars: ", sandbox_vars);
         // Create an html view tab
         let viewElement = document.createElement("iframe");
         viewElement.classList.add("extension-browser-border-view");
@@ -336,15 +336,15 @@ Because of the iframe system some website won't work in this browser (like youtu
 				const iframe_src = ifr.src;
 				//const iframe_href = ifr.contentWindow.location.href;
 				
-				console.log("loaded iframe_src: ", iframe_src);
+				//console.log("loaded iframe_src: ", iframe_src);
 				//console.log("iframe_href: ", iframe_href);
 				
 				if(!iframe_src.startsWith('data:')){
-					console.warn("iframe_src DID NOT start with data: ", iframe_src);
+					//console.warn("iframe_src DID NOT start with data: ", iframe_src);
 					//this.grab(iframe_src);
 				}
 				else{
-					console.warn("iframe src started with 'data:'");
+					//console.warn("iframe src started with 'data:'");
 					//console.log(decodeURI(iframe_src));
 				}
 				
@@ -367,7 +367,7 @@ Because of the iframe system some website won't work in this browser (like youtu
     }
 
     setCurrent(id) {
-		console.log("setCurrent. id: ", id);
+		//console.log("setCurrent. id: ", id);
         try {
             for (let tab of this.#browserBody
                 .querySelector("#extension-browser-border-tab-container")
@@ -434,17 +434,17 @@ Because of the iframe system some website won't work in this browser (like youtu
                     .querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
         		)[0];
 		
-		console.log("reloadTab: url: ", url);
+		//console.log("reloadTab: url: ", url);
 		if(!url.startsWith("data:") && !window.extension_browser_restoring_tabs){
 			if(window.extension_browser_history_length){
-				console.log("window.extension_browser_recent_urls before: ", typeof window.extension_browser_recent_urls, window.extension_browser_recent_urls);
+				//console.log("window.extension_browser_recent_urls before: ", typeof window.extension_browser_recent_urls, window.extension_browser_recent_urls);
 				
 				if(window.extension_browser_recent_urls.indexOf(url) == -1){
 					window.extension_browser_recent_urls.push(url);
 					if(window.extension_browser_recent_urls.length > window.extension_browser_history_length){
 						window.extension_browser_recent_urls = window.extension_browser_recent_urls.slice(-1 * window.extension_browser_history_length)
 					}
-					console.log("window.extension_browser_recent_urls after: ", window.extension_browser_recent_urls);
+					//console.log("window.extension_browser_recent_urls after: ", window.extension_browser_recent_urls);
 					localStorage.setItem("extension_browser_recent_urls",JSON.stringify(window.extension_browser_recent_urls));
 				}
 			}
@@ -455,11 +455,11 @@ Because of the iframe system some website won't work in this browser (like youtu
 				for(let i=0; i < tab_els.length; i++){
 					window.extension_browser_open_tabs.push(tab_els[i].dataset.url);
 				}
-				console.log("open tabs list: ", window.extension_browser_open_tabs);
+				//console.log("open tabs list: ", window.extension_browser_open_tabs);
 				localStorage.setItem("extension_browser_open_tabs",JSON.stringify(window.extension_browser_open_tabs));
 			}
 			else{
-				console.log("restoring tabs is disabled");
+				//console.log("restoring tabs is disabled");
 			}
 		}
 		
@@ -519,7 +519,7 @@ Because of the iframe system some website won't work in this browser (like youtu
 			{'action':'grab','url':url}
         ).then((body) => {
             
-            console.log("grabbed html: ", body);
+            //console.log("grabbed html: ", body);
 			
 		this.#browserBody
 			.querySelector("#extension-browser-border-view-container")
@@ -694,7 +694,8 @@ Because of the iframe system some website won't work in this browser (like youtu
 			
 		}
 
-
+		
+		// keyboard shortcuts
         if (this.#Files.config.browser.enableShortcuts) {
             for (const keybind in this.keybinds) {
                 if (Object.hasOwnProperty.call(this.keybinds, keybind)) {
@@ -733,6 +734,7 @@ Because of the iframe system some website won't work in this browser (like youtu
                 }
             }
         }
+		
     }
 }
 

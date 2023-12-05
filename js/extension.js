@@ -276,7 +276,7 @@
 			window.extension_browser_restoring_tabs = true;
 			
 			this.browser = new Border();
-			console.log("this.browser: ", this.browser);
+			//console.log("this.browser: ", this.browser);
 
 			const browser_root_el = document.getElementById('extension-browser-border-root');
             
