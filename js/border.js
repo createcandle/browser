@@ -78,16 +78,27 @@ class Border {
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>New Tab</title>
+<style>
+a{color:white;padding:.5rem 1rem;border-radius:15px;display:inline-block;background:DarkGray;text-decoration:none}
+ul{padding:0}
+li{margin:.2rem 0;border-radius:15px;overflow:hidden;list-style-type:none;}
+a:hover{background:MidnightBlue}
+</style>
 </head>
 <body style="font-family: 'Lexend'; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; font-family: 'Lexend', sans-serif; color: white; background:gray">
 <div id="centered" style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start;">
-<input type="text" id="search" placeholder="Search..." style="padding: 10px 15px; width: 100%; box-sizing:border-box;max-width:450px; border-radius: 30px; border: none; ">
-		
+<div style="display: flex">
+<input type="text" id="search" placeholder="Search..." style="padding: 10px 15px; width: calc(100% - 40px); box-sizing:border-box;max-width:450px; border-top-left-radius:50px; border-bottom-left-radius:50px; border: none; "/>
+<div id="extension-browser-border-new-tab-search-button" style="display: flex;align-items:center;justify-content:center;min-width:35px;min-height:35px;border-top-right-radius:50px;border-bottom-right-radius:50px;background:DarkGray; color:black; cursor:pointer;">
+🔍
+</div>
+</div>
+<!-- recent_urls //-->
 </div>
 <script>
 
 window.onerror = (e) => {
-	console.log("window.onerror: ", e);
+console.log("window.onerror: ", e);
 };
 
 const search = document.getElementById("search");
@@ -98,37 +109,13 @@ handledValue = encodeURI("` + localStorage.getItem("extension_browser_search_url
 location.href = handledValue;
 }
 });
+
+document.getElementById('extension-browser-border-new-tab-search-button').addEventListener("click", (e) => {
+handledValue = encodeURI("` + localStorage.getItem("extension_browser_search_url") + `" + search.value.replace(" ", "+"))
+location.href = handledValue;
+});
+
 </script>
-</body>
-</html>
-`,
-        changelog: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Tab</title>
-</head>
-<body style="width: calc(100vw - 30px * 2); height: calc(100% - 30px * 2); overflow: auto; font-family: 'Lexend', sans-serif; padding: 30px; margin: 0; color: white;">
-<img src="data:image/png;base64,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">
-<h1>${this.version} changelog.</h1>
-<ul>
-    <li>All the UI has been redesigned. (delete default.css to see changes)</li>
-    <li>No more text icon. Border use SVG icons now.</li>
-    <li>All the code has been rewrited.</li>
-    <li>Border has now an API.</li>
-    <li>About button redirect now on "candle://about" instead of an info window.</li>
-    <li>Bug fixes.</li>
-    <li>Border now show a page when you are offline.</li>
-    <li>Bookmarks can now be named and deleted via UI.</li>
-    <li>Bang search has been replaced with smart search.</li>
-    <li>"candle://urls" added.</li>
-    <li>"candle://shortcuts" added.</li>
-    <li>"candle://themes" added.</li>
-    <li>"candle://404" removed.</li>
-</ul>
 </body>
 </html>
 `,
@@ -139,18 +126,14 @@ location.href = handledValue;
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Tab</title>
+<title>About</title>
 </head>
 <body style="width: calc(100vw - 30px * 2); height: calc(100vh - 30px * 2); overflow: hidden; font-family: 'Lexend', sans-serif; padding: 30px; margin: 0; color: white;">  
-<span style="display: inline-block; font-size: 50px;">About&nbsp;</span>
-<img style="display: inline-block; width: 150px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATIAAABLCAYAAADznAt4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAi7SURBVHgB7Z2Ncds4EIWfblKAOzimgtgVRK7g0kHUQZwKnKvATgVyKsilAikV2KmAugrsDvYAk8pJtiUvyAWwAPebwXhGpgC+5XIJCj87IwfSsenLnSu/XFnPZrMNDKNQuPeP8/MZjGjMEgeyl9i48o8rXy2oGaVhgUwHGgLZLjeu/G0BzSgFC2Q6+AO6WLjSOt9YutLAMAyDgbZAtmXhysoFswUMwzBeQdur5Utcu175ZxiGQuzVUgclBDKPH+U8d77wAMNQhAUyHWh9tXzKKbpXzRMYhmE8oZQe2ZY792A7g2EowXpkOiilR7bl1PnNFQzDMHaYpXqi9K+Fp31578oHDOezO51rGEZmrEemg1muC9HPE1u48tGVBmH4H/3PbOKskRsLZEogJoiED2iu3FA432EYmeE6K4y4aLkQrokLCmcOw8gI11FhxEXThXDNLCiMFQwjI1xHhREXbReCwntmNrfMyAbXSWFERd30i3408mvAVy5gGMakyTZqeYy+l9W6wultbdypvYVhZEDj/TNFVE6I7ddUcntlftTzTxiGMVk0z+z3r5jcReLnMAxjsqgNZH2v7I55+CkMw5gs2tda/mAe9x6GYUwW7YFszTzOpmAYxoTRHsg2zOMskBnGhFE5/WIXG942NGP+qYM3qIQdh9qgwCTA1O0GMnflXf/3ZKds2aDgBMe0v5XTu/6v/6zx/495s9dsX/Md6F9iQTK0rlyRshRz/uK4ctmfX1XatvQa/bKzlSv3x4RAmBT25VYCYch8Z9++xASZIHmWlPnCufbn1F2c6rRtoW57pkt6xQF3gRCU0L7cL0IIMt95kSkGsi1LSnzhqLtA3yk+S8rklNQ9Ra9oABgJZbAv9wsYCZnvHGXKgczTUqIkwK6dTxTwhClJm5RGjIAy2Zd7MEZA5juvMvVAtiVqQhMa+JQpQVuvzz9JVzQSDITy2pcFBkLmOyyqmX4hgHgSYOpGWvzmj7mXUIlr2+I0em1+2/EGIwn1MUX2fZWCtZXhOxbI9hC7aApvshiB+jFxMoQmJIf4WElBzFO4Nv2+Y4HsGSJJgN1p30LfTSaW4FjaET2BN7tG+x6kAm2qfae0BL0pGJ0EuP++xptMJMFxDEcMbF+rfUdjvjMM9T2yEEhBEmDqRnuWGMZ26yK/68ca3e63D3292bX159Ggc8QGw/Eaf/Z/1648cF9bCrHvMzj3j/kOi5d9h5igQKibe/OFhs1+vqfA+TR9ey2Fc9+fJ/splVrbTru3NAzf5jWNSOFH5dj3GRVp0+k73JpQMJQoCTB1kwlD8RdocDc7lba+rUsaxnKMxp32lxROLvvuwWhnSeGY7+w0wAIVQBGTAFPnFKFcQAiKnOB4oL57EkqiTGXa9zeoT9s8oP74vsOtFZVAkZIAU/gTdQFhKGKC4wH6WhJc6kJl2vc3qE+bLt/h1oyKIOEkwBT+xBF7msbWNlBfS7JBrGT7PoI6tenxHW7tqAzqfl/g8kWwrqGjUlm09fUtA+prSXjRMZVt30eE6jLfOdIQC1QGdWu8uItU21fqarn1EMXfWUBYW+gTVXwOFJVt30dQpzY1vjPZCbFSSYB752rA41uKXTmltPXMweera/sOglRg34OY7+wxzne4oRIVQmFPn8WBOhbEp0EiJLT19XDn/rQx9FViX0K92hZH6knmO5NeoiSUBJjbHf4xS7hHuoS23rm4+mL1GGqw7yFCXqVaSoRr6x78JUQqfMfWWo5PAvwOPNZIz1htITfaDeJQg30PwdWmGRW+Y4FsfBLgBjxEfztismYed0jbHMx2IvaGGuZxmu17iAblo8J3LJCNTwLcgEeOG23DPO6QNm6PYWzP5BgN8zjN9j1Eg/JR4TuTD2QBm8WNWisouSldhDZPAj9/So4gsody+9aMCt+xHplxjIZ5XAvD2KdhHifiO5MPZDR+VwbuPlqjd38IRaBN1vddz+RfxKNm+9bco0vqO9Yj44+ubA58znXGBukZq00DNdu3hkC2gQIskKVzxjnSM6VANkd6LJBZIFPDe+Zxvw58/hM8/kJ6xmrTQM325WrTjArfeYMJ088+/sA8/C7w86f45A0nqUa6hLRpoGb7crV5TW9tlPQwU++RfQw4dh34+VP8j58XSIeENg2smceVaN81eKTWVh4B66+qgsKSPUht43OfYnRNShvz+9F9o1b7atQmBVOTmO9MuUd2Cf5I12uzj7+Bx0nfbmwktWmgZvtq01YmqSOnBpycTxRG80p9J2HVRd2uWEwbtwJEhiq1rzZtknDFQIrkDWbGSflIYbC2F3bHrSiMkN9YsmjjVoIEUIX21aRNGq4QSJG8wYxQ+NPU0zDrnlM4kim9xLVxK0ECqEL7atEWA64ISJG8wQxQ132/onCCkj24479TOEsasTtmTG3cipAIqsy+ubXFhCsAUiRvMCHUOeElBSaK6Gkp0EmoG80a2tZlSHsptHErQyKoMvvm0pYC7slDiuQNRoQ65/MTI31+vhUNc4wtCwyARmakpu7J7OvwrxsnObVxK0NCqCL7ptKWA+4JQ4iZZGUV4TO6DP4Nwpn02v35BJ2wtXF9w9U3Q0Jqse9LSGtLfW22pPYdC2TPuXO2PcNInFlvEbZveQqCtGkNZJ4a7HsISW1TCWS2aHwfv/btHDKcQ9caRkltGqjZvtq0qccC2f88OqLUwty+Hi0OKapNAzXbV5m2IrBA1uF/1ziTvtF9ff2rxuis1COIok0DNdtXibZyoGnjR6aSTCykLqt0S+kYrY3bEBRABdo3hTZkIvn50XTxQ9UNEkLdXKEbio+INm5jUAIVZt8U2pCJ5OdH02PlyhwZoXg33EpSG7dRKKMU+6bQhkwkPz+aBq0rX0jZfk7UOeU1jXslamNp454AlKLdvmPgakMmiAmEqG0e2cNO8fuh+1EfkZTssaHuVWWObv6Qz9LcYH/Pq+TauL6Ra65SCBrtK8UxbVOZR/YfxVzwIog50R0AAAAASUVORK5CYII=">
+<h1>About</h1>
 <p>
-Border is an iframe Web browser developped by Onofficiel<br>
-accessible on all platforms.<br>
+This is an iframe Web browser. It is based on open source code developed by <a href="https://github.com/Onofficiel/border">Onofficiel</a> (MIT license)<br>
 Because of the iframe system some website won't work in this browser (like youtube.com).
 </p>
-
-<p style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%)">Border v${this.version} | © Onofficiel - 2022 - All rights reserved</p>
 </body>
 </html>
 `,
@@ -186,14 +169,8 @@ Because of the iframe system some website won't work in this browser (like youtu
 <body style="width: 100vw; height: 100vh; display: flex; justify-content: flex-start; align-items: center; overflow: hidden; font-family: 'Lexend', sans-serif; margin-left: 30px; color: white; background: rgb(172, 167, 53)">
     <div style="margin-left: 10px;">
         <img style="margin-bottom: 10px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAAA5ZDbSAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFRSURBVHgB7d3BDQMxCABBJ7r+W06uCB5oPdOBteKH8Ocs93udxT6vs9j3kCZwnMBxAscJHCdwnMBxAscJHCdwnMBxAscJHCdwnMBxAscJHCdwnMBxz/TO0/YdpduY4DiB4wSOEzhO4DiB4wSOEzhO4DiB4wSOEzhO4DiB4wSOEzhO4DiB4wSOe86w7XetbmOC4wSOEzhO4DiB4wSOEzhO4DiB4wSOEzhO4DiB4wSOEzhO4DiB4wSOEzhu/U2r2/4unH6vCY4TOE7gOIHjBI4TOE7gOIHjBI4TOE7gOIHjBI4TOE7gOIHjBI4TOE7gODtZcSY4TuA4geMEjhM4TuA4geMEjhM4TuA4geMEjhM4TuA4geMEjhM4TuA4gePG/y68zfSdrGkmOE7gOIHjBI4TOE7gOIHjBI4TOE7gOIHjBI4TOE7gOIHjBI4TOE7gOIHj/tV+GOxT3UC5AAAAAElFTkSuQmCC">
-        <div style="margin-bottom: 20px;">
-            <span style="font-size: 20px;">...Crrr...</span><br>
-            <span style="font-size: 30px;">I don't receive you well Commander</span><br>
-            <span style="font-size: 20px;">...Crrr...</span>
-        </div>
         <div>
-            <div style="font-size: 20px;">No Internet Connection.</div>
-            <div style="font-size: 15px;">Verify your settings.</div>
+            <div style="font-size: 20px;">No Internet Connection?</div>
         </div>
     </div>
 </body> 
@@ -215,20 +192,6 @@ Because of the iframe system some website won't work in this browser (like youtu
 </body>
 </html>
 `,
-        themes: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Border themes</title>
-</head>
-<body style="width: 100vw; height: 100vh; margin: 0;">
-<iframe width="100%" height="100%" frameborder=0 src="https://onofficiel.github.io/border/themes"></iframe>
-</body>
-</html>
-`,
     };
 
     #handleURI(url) {
@@ -242,10 +205,37 @@ Because of the iframe system some website won't work in this browser (like youtu
                 const protocol = Object.keys(this.protocols)[i];
 
                 if (RegExp("^candle:/*" + protocol + "$").test(url)) {
-                    return [
-                        encodeURI("data:text/html," + this.protocols[protocol]),
-                        protocol,
-                    ];
+					
+					//console.log("protocol: ", protocol);
+					
+					if(protocol == 'newtab' && window.extension_browser_recent_urls.length){
+						let new_tab_html = this.protocols[protocol];
+						let list_html = '<div id="extension-browser-recent-urls-container"><h3>History</h3><ul>';
+						for(let h=0; h < window.extension_browser_recent_urls.length; h++){
+							let clean_url = window.extension_browser_recent_urls[h];
+							if(clean_url.indexOf('#') != -1){
+								clean_url = clean_url.substring(0, clean_url.indexOf('#'));
+							}
+							list_html += '<li><a href="' + clean_url + '" rel="noreferrer">' + clean_url.replace('https://','') + '</a></li>';
+						}
+						list_html += '</ul></div>';
+						new_tab_html = new_tab_html.replace('<!-- recent_urls //-->',list_html);
+						
+	                    return [
+	                        encodeURI("data:text/html," + new_tab_html),
+	                        protocol,
+	                    ];
+					}
+					else{
+						// <!-- recent_urls //-->
+					
+	                    return [
+	                        encodeURI("data:text/html," + this.protocols[protocol]),
+	                        protocol,
+	                    ];
+					}
+					
+					
                 }
             }
             return [url, false];
@@ -321,11 +311,20 @@ Because of the iframe system some website won't work in this browser (like youtu
         viewElement.dataset.id = tabElement.dataset.id;
 		viewElement.setAttribute('sandbox',sandbox_vars);
 		
-		
 		viewElement.onload = () => {
-			console.log("iframe loaded");
+			//console.log("iframe loaded.. maybe");
 	        //let iframe_html = viewElement.contentWindow.document.body.innerHTML;
 			//console.log("iframe_html: ", iframe_html);
+			/*
+			console.log("performance: ", performance);
+			const resources = performance.getEntriesByType("resource");
+			console.log("resources: ", resources);
+			resources.forEach((entry) => {
+			  console.log(`${entry.name}'s startTime: ${entry.startTime}`);
+			});
+			*/
+			      
+			
 			
 			setTimeout( () => {
 				
@@ -337,7 +336,7 @@ Because of the iframe system some website won't work in this browser (like youtu
 				const iframe_src = ifr.src;
 				//const iframe_href = ifr.contentWindow.location.href;
 				
-				console.log("iframe_src: ", iframe_src);
+				console.log("loaded iframe_src: ", iframe_src);
 				//console.log("iframe_href: ", iframe_href);
 				
 				if(!iframe_src.startsWith('data:')){
@@ -436,14 +435,16 @@ Because of the iframe system some website won't work in this browser (like youtu
         		)[0];
 		
 		console.log("reloadTab: url: ", url);
-		if(!url.startsWith("data:")){
+		if(!url.startsWith("data:") && !window.extension_browser_restoring_tabs){
 			if(window.extension_browser_history_length){
+				console.log("window.extension_browser_recent_urls before: ", typeof window.extension_browser_recent_urls, window.extension_browser_recent_urls);
+				
 				if(window.extension_browser_recent_urls.indexOf(url) == -1){
 					window.extension_browser_recent_urls.push(url);
 					if(window.extension_browser_recent_urls.length > window.extension_browser_history_length){
 						window.extension_browser_recent_urls = window.extension_browser_recent_urls.slice(-1 * window.extension_browser_history_length)
 					}
-					console.log("window.extension_browser_recent_urls: ", window.extension_browser_recent_urls);
+					console.log("window.extension_browser_recent_urls after: ", window.extension_browser_recent_urls);
 					localStorage.setItem("extension_browser_recent_urls",JSON.stringify(window.extension_browser_recent_urls));
 				}
 			}
@@ -456,6 +457,9 @@ Because of the iframe system some website won't work in this browser (like youtu
 				}
 				console.log("open tabs list: ", window.extension_browser_open_tabs);
 				localStorage.setItem("extension_browser_open_tabs",JSON.stringify(window.extension_browser_open_tabs));
+			}
+			else{
+				console.log("restoring tabs is disabled");
 			}
 		}
 		
@@ -668,6 +672,28 @@ Because of the iframe system some website won't work in this browser (like youtu
                 this.setCurrent(this.#tabId[0]);
             }
         }, 10);
+
+
+		if(window.extension_browser_restore_tabs){
+			
+			//for (const index,url in window.extension_browser_open_tabs) {
+			for(let i=0; i < window.extension_browser_open_tabs.length; i++){
+				if(i != 0){
+					this.addTab({ current: true })
+				}
+				
+				this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url = this.#handleURI(window.extension_browser_open_tabs[i])[0];
+				this.reloadTab();
+				/*
+				this.#browserBody
+					.querySelector("#extension-browser-border-view-container")
+				.querySelector(".extension-browser-border-view.extension-browser-border-current").src = 
+				*/
+			}
+			window.extension_browser_restoring_tabs = false;
+			
+		}
+
 
         if (this.#Files.config.browser.enableShortcuts) {
             for (const keybind in this.keybinds) {

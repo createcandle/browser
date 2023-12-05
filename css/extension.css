@@ -98,6 +98,30 @@ iframe#extension-browser-border-view{
 
 
 
+
+
+
+
+/*  full screen  */
+
+#extension-browser-border-menu,
+#extension-browser-border-titlebar{
+	transition: max-height 3s cubic-bezier(0, 1, 0, 1);
+	max-height:200px;
+	overflow: hidden;
+}
+.extension-browser-fullscreen #extension-browser-border-menu,
+.extension-browser-fullscreen #extension-browser-border-titlebar{
+	max-height: 0;
+}
+
+.extension-browser-fullscreen .extension-browser-border-view{
+	pointer-events:none;
+}
+
+
+
+
 @media screen and (max-width: 640px) {
 
 	#extension-browser-border-root .extension-browser-border-tab{

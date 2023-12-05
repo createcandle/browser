@@ -13,7 +13,14 @@
                 this.kiosk = true;
 				window.extension_browser_kiosk = true;
             }
-
+			/*
+			document.onmousemove = function(event)
+			{
+				console.log("mouse moved");
+			 //cursor_x = event.pageX;
+			 //cursor_y = event.pageY;
+			}
+			*/
 
             //console.log(window.API);
 
@@ -22,10 +29,14 @@
 
             // Fullscreem
             this.fullscreen_delay = 60;
+			window.extension_browser_fullscreen_delay = 60;
+			this.fullscreen_interval = null;
             this.previous_last_activity_time = 0;
+			this.last_activity_time = new Date().getTime();
 
 			window.extension_browser_history_length = 5;
 			window.extension_browser_restore_tabs = false;
+			window.extension_browser_restoring_tabs = false;
 			
 			window.extension_browser_recent_urls = [];
 			
@@ -126,12 +137,14 @@
 					window.extension_browser_history_length = parseInt(body.history_length);
 					if(body.history_length){
 						window.extension_browser_recent_urls = localStorage.getItem("extension_browser_recent_urls");
+						
 						if(window.extension_browser_recent_urls == null){
 							window.extension_browser_recent_urls = [];
 						}
 						else{
-							window.extension_browser_recent_urls = JSON.decode(window.extension_browser_recent_urls);
+							window.extension_browser_recent_urls = JSON.parse(window.extension_browser_recent_urls);
 						}
+						console.log("browser: window.extension_browser_recent_urls: ",typeof window.extension_browser_recent_urls, window.extension_browser_recent_urls);
 					}
 					else{
 						window.extension_browser_recent_urls = [];
@@ -144,12 +157,13 @@
 				if(typeof body.restore_tabs != 'undefined'){
 					if(body.restore_tabs){
 						window.extension_browser_restore_tabs = true;
+						window.extension_browser_restoring_tabs = true;
 						window.extension_browser_open_tabs = localStorage.getItem("extension_browser_open_tabs");
 						if(window.extension_browser_open_tabs == null){
 							window.extension_browser_open_tabs = [];
 						}
 						else{
-							window.extension_browser_open_tabs = JSON.decode(window.extension_browser_open_tabs);
+							window.extension_browser_open_tabs = JSON.parse(window.extension_browser_open_tabs);
 						}
 					}
 					else{
@@ -157,11 +171,12 @@
 						localStorage.setItem("extension_browser_open_tabs","[]");
 					}
 				}
-				
+				console.log("browser: window.extension_browser_restore_tabs: ", window.extension_browser_restore_tabs);
 				
 				// fullscreen delay
 				if(typeof body.fullscreen_delay != 'undefined'){
 					window.extension_browser_fullscreen_delay = parseInt(body.fullscreen_delay);
+					this.fullscreen_delay = parseInt(body.fullscreen_delay);
 					console.log("fullscreen_delay: ", window.extension_browser_fullscreen_delay);
 				}
 				
@@ -250,77 +265,98 @@
 
 
         show() {
-                //console.log("in photo frame show");
+            //console.log("in photo frame show");
 
-                if (this.content == '') {
-                    return;
-                } else {
-                    this.view.innerHTML = this.content;
-                }
+            if (this.content == '') {
+                return;
+            } else {
+                this.view.innerHTML = this.content;
+            }
 
-				this.browser = new Border();
-				console.log("this.browser: ", this.browser);
+			window.extension_browser_restoring_tabs = true;
+			
+			this.browser = new Border();
+			console.log("this.browser: ", this.browser);
 
-                //const pre = document.getElementById('extension-browser-response-data');
-                const thing_list = document.getElementById('extension-browser-thing-list');
+			const browser_root_el = document.getElementById('extension-browser-border-root');
+            
+			if(this.fullscreen_delay > 0){
+				
+				// Mouse
+	            browser_root_el.addEventListener('mousemove', () => {
+	                this.last_activity_time = new Date().getTime();
+	            }, {
+	                passive: true
+	            });
+	            browser_root_el.addEventListener('mousedown', () => {
+	                this.last_activity_time = new Date().getTime();
+	            }, {
+	                passive: true
+	            });
+	            browser_root_el.addEventListener('click', () => {
+	                if (this.screensaver_ignore_click) {
+	                    //console.log('ignoring click');
+	                } else {
+	                    this.last_activity_time = new Date().getTime();
+	                }
 
-				/*
-                if (this.kiosk) {
-                    //console.log("fullscreen");
-                    document.getElementById('extension-browser-photos-file-selector').style.display = 'none';
-                    document.getElementById('extension-browser-photos-file-selector').outerHTML = "";
-                    //document.getElementById('extension-browser-dropzone').outerHTML = "";
+	            }, {
+	                passive: true
+	            });
 
-                } else {
-                    //console.log("Attaching file listeners");
-                    document.getElementById("extension-browser-photos-file-selector").addEventListener('change', () => {
-                        var filesSelected = document.getElementById("extension-browser-photos-file-selector").files;
-                        this.upload_files(filesSelected);
-                    });
+	            // Touch
+	            browser_root_el.addEventListener('touchstart', () => {
+	                this.last_activity_time = new Date().getTime();
+	            }, {
+	                passive: true
+	            });
+	            browser_root_el.addEventListener('touchmove', () => {
+	                this.last_activity_time = new Date().getTime();
+	            }, {
+	                passive: true
+	            });
 
-                    //this.createDropzoneMethods(); //  disabled, as files could be too big. For now users can just upload an image one at a time.
-                }
-				*/
-				/*
-                document.getElementById("extension-browser-picture-holder").addEventListener('click', () => {
-                    if (this.showing_screensaver == false) {
-                        var menu_button = document.getElementById("menu-button");
-                        menu_button.click(); //dispatchEvent('click');
-                    }
-                    this.last_activity_time = new Date().getTime();
+	            // Scroll
+	            browser_root_el.addEventListener('scroll', () => {
+	                this.last_activity_time = new Date().getTime();
+	            }, true);
+				
+				const search_bar_el = document.getElementById('extension-browser-border-searchbar')
+				if(search_bar_el){
+					search_bar_el.addEventListener('input', () => {
+	                this.last_activity_time = new Date().getTime();
+	            }, true);
+				}
+				
 
-                });
-				*/
+	            this.fullscreen_interval = setInterval(() => {
 
-                /*
-    		document.getElementById("extension-browser-back-button").addEventListener('click', () => {
-    			const picture_holder = document.getElementById('extension-browser-picture-holder');
-    			const overview = document.getElementById('extension-browser-overview');
-    			this.addClass(overview,"extension-browser-hidden");
-    			this.removeClass(picture_holder,"extension-browser-hidden");
-    		});
-            */
+					if (document.activeElement.tagName === "INPUT"){
+						this.last_activity_time = new Date().getTime();
+					}
+					else{
+						const current_time = new Date().getTime();
+		                const delta = current_time - this.last_activity_time;
+		                //console.log('browser activity delta: ', delta, ' vs ',  this.fullscreen_delay*1000);
+		                if (delta > this.fullscreen_delay * 1000) {
+		                	//console.log("time to switch to fullscreen browser");
+							browser_root_el.classList.add('extension-browser-fullscreen');
+		                }
+						else{
+							//console.log("browser: recent activity");
+							browser_root_el.classList.remove('extension-browser-fullscreen');
+						}
+					}
+					
+					
+					
+				},100);
+				
+			}
+			
+			
 
-
-                // Get list of photos (as well as other variables)
-				/*
-                window.API.postJson(
-                    `/extensions/${this.id}/api/list`, {
-                        'init': 1
-                    }
-
-                ).then((body) => {
-                    if (this.debug) {
-                        console.log("/list response: ", body);
-                    }
-
-                }).catch((e) => {
-                    //pre.innerText = e.toString();
-                    console.log("Browser: error in show list function: ", e);
-                });
-				*/
-
-        } // and of show function
+        } // end of show function
 
 
 

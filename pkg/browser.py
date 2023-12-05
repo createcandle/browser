@@ -109,8 +109,9 @@ class BrowserAPIHandler(APIHandler):
                     print('self.persistent_data loaded from file: ' + str(self.persistent_data))
                 
         except:
-            if self.DEBUG:
-                print("Could not load persistent data (if you just installed the add-on then this is normal)")
+            pass
+            #if self.DEBUG:
+            #    print("could not load persistent data (if you just installed the add-on then this is normal)")
 
         
 
@@ -185,12 +186,6 @@ class BrowserAPIHandler(APIHandler):
                         
                         # INIT
                         if action == 'init':
-                            
-                            self.fullscreen_delay = 60;
-                            self.search_url = "https://swisscows.com/en/web?query="
-        
-                            self.restore_tabs = False;
-                            self.history_length = 5;
                             
                             return APIResponse(
                               status=200,
