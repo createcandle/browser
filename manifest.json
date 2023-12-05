@@ -12,7 +12,7 @@
       ]
     }
   ],
-  "description": "A web browser inside your web browser",
+  "description": "A web browser inside your web browser. Useful when in Kiosk mode.",
   "gateway_specific_settings": {
     "webthings": {
       "exec": "python3 {path}/main.py",
