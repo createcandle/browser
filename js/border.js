@@ -406,7 +406,7 @@ Because of the iframe system some website won't work in this browser (such as yo
 
     // BORDER API
     addTab(tab) {
-		console.warn("\n\n in addTab. tab: ",tab);
+		//console.warn("\n\n in addTab. tab: ",tab);
         if (!tab)
             throw new Error("You have to add an object for creating a tab.");
         if (!tab.url) tab.url = this.#Files.config.browser.defaultPage;
@@ -681,7 +681,6 @@ Because of the iframe system some website won't work in this browser (such as yo
 			if(url.startsWith("http")){ // could also be data:
 				
 				// favicon
-				console.log("reloadTab: url starts with http");
 				let favicon_url = url;
 			    var a = document.createElement('a');
 			    a.href = favicon_url;
