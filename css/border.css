@@ -240,9 +240,10 @@
 .extension-browser-border-title{
 	max-width:calc(100% - 1.5rem);
 	flex-shrink:1;
-	white-space: nowrap
+	white-space: nowrap;
 }
 
+.extension-browser-delete-list-item-button,
 .extension-browser-border-close-btn{
 	min-width:2.5rem;
 	width:2.5rem;
@@ -265,3 +266,10 @@
 #extension-browser-border-root path.extension-browser-border-svg-icon-add {
     fill: var(--extension-browser-border-secondary);
 }
+
+
+
+.extension-browser-delete-list-item-button{
+	background-color:rgba(255,255,255,.3);
+}
+

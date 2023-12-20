@@ -63,7 +63,7 @@ class BrowserAPIHandler(APIHandler):
         self.search_url = "https://swisscows.com/en/web?query="
         
         self.restore_tabs = True
-        self.history_length = 5
+        self.history_length = 10
         self.slideshow = False
             
         try:

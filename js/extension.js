@@ -34,7 +34,7 @@
             this.previous_last_activity_time = 0;
 			this.last_activity_time = new Date().getTime();
 
-			window.extension_browser_history_length = 5;
+			window.extension_browser_history_length = 10;
 			window.extension_browser_restore_tabs = false;
 			window.extension_browser_restoring_tabs = false;
 			window.extension_browser_slideshow = false;
@@ -137,7 +137,7 @@
                         setTimeout( () => {
 							// crude way to wait for border library to load
                         	this.show();
-                        },1000);
+                        },2000);
                     }
                 })
                 .catch((e) => console.error('Failed to fetch content:', e));
@@ -324,6 +324,19 @@
 			
 			this.browser = new Border();
 			//console.log("this.browser: ", this.browser);
+
+
+			if(localStorage.getItem('extension-browser-shown-limitations-hint') == null){
+				
+				const hint_el = document.getElementById('extension-browser-limitations-hint');
+				if(hint_el){
+					hint_el.style.display = 'flex';
+					hint_el.addEventListener('click', () => {
+	                	hint_el.style.display = 'none';
+						localStorage.setItem('extension-browser-shown-limitations-hint',1);
+	            	});
+				}
+			}
 
 			const browser_root_el = document.getElementById('extension-browser-border-root');
             
