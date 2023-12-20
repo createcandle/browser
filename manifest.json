@@ -31,6 +31,7 @@
 	  "Restore tabs": true,
       "Browsing history length": 5,
       "Fullscreen delay": 60,
+	  "Slideshow": true,
 	  "Search URL":"https://swisscows.com/en/web?query=",
       "Debugging": false
     },
@@ -52,8 +53,12 @@
 		  "minimum": 0,
 		  "maximum": 180
         },
+        "Slideshow": {
+          "description": "The browser can switch between all open tabs to create a slideshow. This requires multiple browser tabs to be open, and the fullscreen mode must be active. The fullscreen delay also becomes the time between switching tabs.",
+          "type": "boolean"
+        },
         "Search URL": {
-          "description": "Advanced. You can change to a custom default search engine. However, very few search engines will run inside an iframe AND not attempy to open new links in a new window by default (opening links in new windows is blocked for security reasons). The default is https://swisscows.com/en/web?query=",
+          "description": "Advanced. You can change to a custom default search engine. However, very few search engines will run inside an iframe AND not attempt to open new links in a new window by default (opening links in new windows is blocked for security reasons). The default is https://swisscows.com/en/web?query=",
 		  "type": "string"
         },
         "Debugging": {

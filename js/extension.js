@@ -27,8 +27,8 @@
             this.debug = false;
             this.content = '';
 
-            // Fullscreem
-            this.fullscreen_delay = 60;
+            // Fullscreen
+            this.fullscreen_delay = 60000;
 			window.extension_browser_fullscreen_delay = 60;
 			this.fullscreen_interval = null;
             this.previous_last_activity_time = 0;
@@ -37,6 +37,9 @@
 			window.extension_browser_history_length = 5;
 			window.extension_browser_restore_tabs = false;
 			window.extension_browser_restoring_tabs = false;
+			window.extension_browser_slideshow = false;
+			this.slideshow = false;
+			this.last_slide_change_time = 0;
 			
 			window.extension_browser_recent_urls = [];
 			
@@ -45,6 +48,30 @@
 				window.extension_browser_search_url = 'https://swisscows.com/en/web?query=';
 				localStorage.setItem("extension_browser_search_url",window.extension_browser_search_url);
 			}
+			
+			window.document.addEventListener('extension_browser_iframe_event', handleEvent, false)
+			function handleEvent(e) {
+				console.log("extension_browser_iframe_event: ", e.detail); // outputs: {foo: 'bar'}
+			}
+			/*
+			window.addEventListener(
+			  "message",
+			  (event) => {
+				  
+				  if(event.data.new_url){
+					  console.log("event.data.new_url: ", event.data.new_url);
+				  }
+				  
+				  console.log("message event: ", event);
+				  console.log("message event.origin: ", event.origin);
+			    //if (event.origin !== "http://example.org:8080") return;
+
+			    // …
+			  },
+			  false,
+			);
+			*/
+			
 			
 			
 			/*
@@ -123,7 +150,15 @@
                 }
 
             ).then((body) => {
-				console.log("browser init response: ", body);
+				
+				
+				if(typeof body.debug != 'undefined'){
+					this.debug = body.debug;
+					
+				}
+				if(this.debug){
+					console.log("browser init response: ", body);
+				}
 				
 				// Search URL
 				if(typeof body.search_url != 'undefined'){
@@ -144,7 +179,9 @@
 						else{
 							window.extension_browser_recent_urls = JSON.parse(window.extension_browser_recent_urls);
 						}
-						console.log("browser: window.extension_browser_recent_urls: ",typeof window.extension_browser_recent_urls, window.extension_browser_recent_urls);
+						if(this.debug){
+							console.log("browser: window.extension_browser_recent_urls: ",typeof window.extension_browser_recent_urls, window.extension_browser_recent_urls);
+						}
 					}
 					else{
 						window.extension_browser_recent_urls = [];
@@ -171,15 +208,25 @@
 						localStorage.setItem("extension_browser_open_tabs","[]");
 					}
 				}
-				console.log("browser: window.extension_browser_restore_tabs: ", window.extension_browser_restore_tabs);
+				if(this.debug){
+					console.log("browser: window.extension_browser_restore_tabs: ", window.extension_browser_restore_tabs);
+				}
 				
 				// fullscreen delay
 				if(typeof body.fullscreen_delay != 'undefined'){
 					window.extension_browser_fullscreen_delay = parseInt(body.fullscreen_delay);
-					this.fullscreen_delay = parseInt(body.fullscreen_delay);
-					console.log("fullscreen_delay: ", window.extension_browser_fullscreen_delay);
+					this.fullscreen_delay = parseInt(body.fullscreen_delay) * 1000;
 				}
 				
+				// slideshow
+				if(typeof body.slideshow != 'undefined'){
+					window.extension_browser_slideshow = body.slideshow;
+					this.slideshow = body.slideshow;
+				}
+				
+				if(this.debug){
+					console.log("browser: fullscreen_delay: ", this.fullscreen_delay);
+				}
 			
 				
 				
@@ -331,31 +378,41 @@
 
 	            this.fullscreen_interval = setInterval(() => {
 
+					const now_stamp = new Date().getTime();
 					if (document.activeElement.tagName === "INPUT"){
-						this.last_activity_time = new Date().getTime();
+						this.last_activity_time = now_stamp;
+						
 					}
 					else{
-						const current_time = new Date().getTime();
-		                const delta = current_time - this.last_activity_time;
+						
+		                const delta = now_stamp - this.last_activity_time;
 		                //console.log('browser activity delta: ', delta, ' vs ',  this.fullscreen_delay*1000);
-		                if (delta > this.fullscreen_delay * 1000) {
+		                if (delta > this.fullscreen_delay) {
 		                	//console.log("time to switch to fullscreen browser");
 							browser_root_el.classList.add('extension-browser-fullscreen');
+							
+							if(this.slideshow){
+								//console.log("this.slideshow is true. this.last_slide_change_time: ", (now_stamp - this.last_slide_change_time) / 1000);
+								if(now_stamp - this.last_slide_change_time > this.fullscreen_delay){
+									this.last_slide_change_time = now_stamp;
+									this.next_slide();
+								}
+							}
+							else{
+								//console.log("this.slideshow is false. this.last_slide_change_time: ", (now_stamp - this.last_slide_change_time) / 1000);
+							}
 		                }
 						else{
 							//console.log("browser: recent activity");
 							browser_root_el.classList.remove('extension-browser-fullscreen');
 						}
+						
 					}
-					
-					
 					
 				},100);
 				
 			}
 			
-			
-
         } // end of show function
 
 
@@ -379,7 +436,43 @@
 
 
 
-        
+        next_slide(){
+			console.log("in next_slide");
+        	let tabs_el = document.getElementById('extension-browser-border-tab-container');
+			let tabs = tabs_el.querySelectorAll('.extension-browser-border-tab');
+			
+			if(tabs.length > 1){
+				let frames_el = document.getElementById('extension-browser-border-view-container');
+				let frame_els = frames_el.querySelectorAll('.extension-browser-border-view');
+				console.log("frame_els: ", frame_els);
+				var found_it = false;
+				for(var i = 0; i < tabs.length; i++){
+					console.log(i, tabs[i].classList);
+					if(found_it == false){
+						if(tabs[i].classList.contains('extension-browser-border-current')){
+							found_it = true;
+							console.log("found current tab");
+							if(i + 1 < tabs.length){
+								console.log("setting next tab as active");
+								tabs[i + 1].classList.add('extension-browser-border-current');
+								frame_els[i + 1].classList.add('extension-browser-border-current');
+								document.getElementById('extension-browser-border-searchbar').value = tabs[i + 1].dataset.url;
+							}
+							else{
+								console.log("setting first tab as active");
+								tabs[0].classList.add('extension-browser-border-current');
+								frame_els[0].classList.add('extension-browser-border-current');
+								document.getElementById('extension-browser-border-searchbar').value = tabs[0].dataset.url;
+							}
+						}
+						tabs[i].classList.remove("extension-browser-border-current");
+						frame_els[i].classList.remove("extension-browser-border-current");
+					}
+				
+				}
+			}
+			
+        }
 
 
         //

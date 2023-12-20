@@ -59,11 +59,12 @@ class BrowserAPIHandler(APIHandler):
             
         #self.things = [] # Holds all the things, updated via the API. Used to display a nicer thing name instead of the technical internal ID.
             
-        self.fullscreen_delay = 60;
+        self.fullscreen_delay = 60
         self.search_url = "https://swisscows.com/en/web?query="
         
-        self.restore_tabs = True;
-        self.history_length = 5;
+        self.restore_tabs = True
+        self.history_length = 5
+        self.slideshow = False
             
         try:
             manifest_fname = os.path.join(
@@ -156,6 +157,11 @@ class BrowserAPIHandler(APIHandler):
             if self.DEBUG:
                 print("-Fullscreen delay preference was in config: " + str(self.fullscreen_delay))
                 
+        if 'Slideshow' in config:
+            self.slideshow = bool(config['Slideshow'])
+            if self.DEBUG:
+                print("-Slideshow preference was in config: " + str(self.slideshow))
+                
         if 'Search URL' in config:
             self.search_url = str(config['Search URL'])
             if self.DEBUG:
@@ -173,166 +179,76 @@ class BrowserAPIHandler(APIHandler):
         try:
         
             if request.method != 'POST':
-                print("not post")
+                #print("not post")
                 return APIResponse(status=404)
             
-            if request.path == '/init' or request.path == '/list' or request.path == '/delete' or request.path == '/save' or request.path == '/wake' or request.path == '/ajax'  or request.path == '/get_time':
-
-                try:
+            if request.path == '/ajax':
+                
+                action = str(request.body['action'])
+                
+                
+                # INIT
+                if action == 'init':
                     
-                    if request.path == '/ajax':
-                        action = str(request.body['action'])
-                        
-                        
-                        # INIT
-                        if action == 'init':
-                            
-                            return APIResponse(
-                              status=200,
-                              content_type='application/json',
-                              content=json.dumps({
-                                                'action':action,
-                                                'search_url':str(self.search_url),
-                                                'fullscreen_delay':self.fullscreen_delay,
-                                                'restore_tabs':self.restore_tabs,
-                                                'history_length':self.history_length
-                                                }),
-                            )
-                        
-                        
-                        # GRAB URL
-                        elif action == 'grab':
-                            
-                            url = str(request.body['url'])
-                            
-                            res = requests.get(url)
-
-                            if self.DEBUG:
-                                print("HTML: " + str(res.text))
-                            
-                            return APIResponse(
-                              status=200,
-                              content_type='application/json',
-                              content=json.dumps({
-                                                'action':action,
-                                                'html':str(res.text) 
-                                                }),
-                            )
-                            
-                            
-                            
-                        
-                        # UNSUPPORTED ACTION
-                        else:
-                            return APIResponse(
-                              status=404,
-                              content_type='application/json',
-                              content=json.dumps("Unsupported action"),
-                            )
-                            
-                    
-                    
-                    
-                    
-                    if request.path == '/list':
-                        if self.DEBUG:
-                            print("LISTING")
-                        # Get the list of photos
-                        try:
-                            state = True
-                            
-                            return APIResponse(
-                              status=200,
-                              content_type='application/json',
-                              content=json.dumps({
-                                                'fit_to_screen':self.fit_to_screen,
-                                                'debug':self.DEBUG 
-                                                }),
-                            )
-                        except Exception as ex:
-                            print("Error getting init data: " + str(ex))
-                            return APIResponse(
-                              status=500,
-                              content_type='application/json',
-                              content=json.dumps("Error while getting thing data: " + str(ex)),
-                            )
-                            
-                            
-                            
-                    elif request.path == '/delete':
-                        if self.DEBUG:
-                            print("DELETING")
-                        try:
-                            data = []
-                            #target_data_type = self.data_types_lookup_table[int(request.body['property_id'])]
-                            #print("target data type from internal lookup table: " + str(target_data_type))
-                            # action, data_type, property_id, new_value, old_date, new_date
-                            data = self.delete_file( str(request.body['filename']) )
-                            if isinstance(data, str):
-                                state = 'error'
-                            else:
-                                state = 'ok'
-                            
-                            return APIResponse(
-                              status=200,
-                              content_type='application/json',
-                              content=json.dumps({'state' : state, 'data' : data}),
-                            )
-                        except Exception as ex:
-                            print("Error getting thing data: " + str(ex))
-                            return APIResponse(
-                              status=500,
-                              content_type='application/json',
-                              content=json.dumps("Error while changing point: " + str(ex)),
-                            )
-                            
-                            
-                            
-                            
-                    elif request.path == '/save':
-                        #if self.DEBUG:
-                        print("SAVING")
-                        try:
-                            return APIResponse(
-                              status=200,
-                              content_type='application/json',
-                              content=json.dumps({'state' : True}),
-                            )
-                        except Exception as ex:
-                            print("Error saving photo: " + str(ex))
-                            return APIResponse(
-                              status=500,
-                              content_type='application/json',
-                              content=json.dumps("Error while saving photo: " + str(ex)),
-                            )
-                        
-                        
-                    else:
-                        return APIResponse(
-                          status=500,
-                          content_type='application/json',
-                          content=json.dumps("API error"),
-                        )
-                        
-                        
-                except Exception as ex:
-                    print(str(ex))
                     return APIResponse(
-                      status=500,
+                      status=200,
                       content_type='application/json',
-                      content=json.dumps("Error"),
+                      content=json.dumps({
+                                        'action':action,
+                                        'search_url':str(self.search_url),
+                                        'fullscreen_delay':self.fullscreen_delay,
+                                        'restore_tabs':self.restore_tabs,
+                                        'history_length':self.history_length,
+                                        'slideshow':self.slideshow
+                                        }),
+                    )
+                
+                
+                # GRAB URL
+                elif action == 'grab':
+                    
+                    url = str(request.body['url'])
+                    
+                    res = requests.get(url)
+
+                    if self.DEBUG:
+                        print("HTML: " + str(res.text))
+                    
+                    return APIResponse(
+                      status=200,
+                      content_type='application/json',
+                      content=json.dumps({
+                                        'action':action,
+                                        'html':str(res.text) 
+                                        }),
                     )
                     
-            else:
-                print("unknown API path")
-                return APIResponse(status=404)
+                    
+                    
                 
-        except Exception as e:
-            print("Failed to handle UX extension API request: " + str(e))
+                # UNSUPPORTED ACTION
+                else:
+                    return APIResponse(
+                      status=404,
+                      content_type='application/json',
+                      content=json.dumps({"error":"Unsupported action"}),
+                    )
+                        
+
+                    
+            else:
+                if self.DEBUG:
+                    print("unknown API path")
+                return APIResponse(status=404)
+               
+                
+        except Exception as ex:
+            if self.DEBUG:
+                print("Failed to handle UX extension API request: " + str(ex))
             return APIResponse(
               status=500,
               content_type='application/json',
-              content=json.dumps("API Error"),
+              content=json.dumps({"error":"General API error"}),
             )
         
 

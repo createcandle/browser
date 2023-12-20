@@ -27,6 +27,77 @@ class Border {
 
         }
         sync();
+		
+		window.addEventListener(
+		  "message",
+		  (event) => {
+			  
+			  console.log("received message event: ", event);
+			  //console.log("message event.origin: ", event.origin);
+			  
+			  if(typeof event.data.new_url != 'undefined'){
+				  console.log("- event.data.new_url: ", event.data.new_url);
+				  this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url = event.data.new_url;
+			      //console.log("dataset.url from html: ", this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url);
+			  
+			  	  if(this.#browserBody.querySelector("#extension-browser-border-searchbar").value != event.data.new_url){
+			  	  	  this.reloadTab();
+			  	  }
+				  
+				  let basic_url = this.#browserBody.querySelector(".extension-browser-border-view.extension-browser-border-current").src;
+				  console.log("- basic_url", basic_url);
+				  /*
+				  if(this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").contentWindow){
+					  let real_url = this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").contentWindow.location.href;
+					  console.log("real_url", real_url);
+				  }
+				  else{
+					  console.log("nope, cannot real real url");
+				  }
+				  */
+			  }
+			  else{
+				  console.error("new_url was undefined. event: ", event);
+			  }
+			  
+			  
+			  
+			  
+			  
+			  /*
+	          if (
+	              this.#handleURI(
+	                  event.data.new_url
+	              )[1]
+	          ) {
+	              this.#browserBody
+	                  .querySelector(".extension-browser-border-tab.extension-browser-border-current")
+	                  .querySelector(".extension-browser-border-title").innerText =
+	                  this.#handleURI(
+	                      this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
+	                  )[1];
+	          } else {
+	              this.#browserBody
+	                  .querySelector(".extension-browser-border-tab.extension-browser-border-current")
+	                  .querySelector(".extension-browser-border-title").innerText = this.#handleURI(
+	                      this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
+	                  )[0]
+	                      .split("/")[2];
+	  		}
+			  */
+			  
+			  
+			  
+			  //this.reloadTab();
+			  
+		    //if (event.origin !== "http://example.org:8080") return;
+
+		    // …
+		  },
+		  false,
+		);
+		
+		
     }
 
     // Variable declaration
@@ -83,37 +154,116 @@ a{color:white;padding:.5rem 1rem;border-radius:15px;display:inline-block;backgro
 ul{padding:0}
 li{margin:.2rem 0;border-radius:15px;overflow:hidden;list-style-type:none;}
 a:hover{background:MidnightBlue}
+.icon{border-radius:1rem;background:rgba(0,0,0,.2);padding:1rem;margin-right:.2rem}
 </style>
 </head>
 <body style="font-family: 'Lexend'; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; font-family: 'Lexend', sans-serif; color: white; background:gray">
 <div id="centered" style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start;">
-<div style="display: flex">
+<div style="width:100%;display:flex">
 <input type="text" id="search" placeholder="Search..." style="padding: 10px 15px; width: calc(100% - 40px); box-sizing:border-box;max-width:450px; border-top-left-radius:50px; border-bottom-left-radius:50px; border: none; "/>
 <div id="extension-browser-border-new-tab-search-button" style="display: flex;align-items:center;justify-content:center;min-width:35px;min-height:35px;border-top-right-radius:50px;border-bottom-right-radius:50px;background:DarkGray; color:black; cursor:pointer;">
 🔍
 </div>
 </div>
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;width:100%;margin:2rem 0">
+<a class="icon" href="https://www.candlesmarthome.com" onclick="pass_url(this);">Candle</a>
+<a class="icon" href="https://www.wikipedia.com" onclick="pass_url(this);">Wikipedia</a>
+<a class="icon" href="https://axios.com/" onclick="pass_url(this);">Axios</a>
+<a class="icon" href="#" onclick="return random_art(this,'news');">News</a>
+<a class="icon" href="#" onclick="return random_art(this,'art');">Art</a>
+</div>
+
 <!-- recent_urls //-->
 </div>
 <script>
-
 window.onerror = (e) => {
 console.log("window.onerror: ", e);
 };
-
 const search = document.getElementById("search");
-
 search.addEventListener("keydown", (e) => {
 if (e.code === "Enter") {
 handledValue = encodeURI("` + localStorage.getItem("extension_browser_search_url") + `" + search.value.replace(" ", "+"))
 location.href = handledValue;
 }
 });
-
 document.getElementById('extension-browser-border-new-tab-search-button').addEventListener("click", (e) => {
 handledValue = encodeURI("` + localStorage.getItem("extension_browser_search_url") + `" + search.value.replace(" ", "+"))
 location.href = handledValue;
 });
+
+function pass_url(new_url){
+	console.log("in pass_url. new_url: ", new_url);
+	if(typeof new_url == 'string'){
+		window.parent.postMessage({ 'new_url':new_url});
+	}
+	else{
+		window.parent.postMessage({ 'new_url':new_url.href});
+	}
+	//var data = { new_url: new_url.href,'foo':'bar' }
+	//var event = new CustomEvent('extension_browser_iframe_event', { detail: data })
+	//window.parent.document.dispatchEvent(event)
+	
+}
+
+const art_sites = [
+	'https://www.tryingtrying.com/',
+	'https://www.homagetothe.com/',
+	'https://www.oozemove.com/',
+	'https://www.neogeocity.com/',
+	'https://www.flyingfrying.com/',
+	'https://www.pinkyellowblue.com/',
+	'https://www.slickquick.com/',
+	'https://www.manymoment.com/',
+	'https://www.manysome.com/',
+	'https://www.notneverno.com/',
+	'https://www.staringcaring.com/',
+	'https://www.shapesqueeze.com/',
+	'https://www.somestill.com/',
+	'https://www.returnreverse.com/',
+	'https://movingdriving.com/',
+	'https://www.doublepressure.com/',
+	'https://www.onlysuddenly.com/',
+	'https://www.startstopgo.com/',
+	'https://www.herethat.com/',
+	'https://www.doublenever.com/',
+	'https://www.eggalone.com/',
+	'https://www.somethingopen.com/',
+	'https://www.lotsofmany.com/',
+	'https://www.unknownlandscape.com/',
+	'https://www.everythingalwayseverywhere.com/',
+	'https://www.nothingeverhappens.com/',
+	'https://ifnoyes.com/',
+	'https://www.nevernowhere.com/',
+	'https://www.intotime.com/',
+	'https://www.movenowthinklater.com/',
+	'https://www.innerdoubts.com/',
+	'https://www.fallingfalling.com/',
+	'https://www.likethisforever.com/',
+	'https://hotdoom.com/',
+	'https://www.hybridmoment.com/',
+	'https://www.electricboogiewoogie.com/',
+	'https://www.popcornpainting.com/',
+	'https://www.vaiavanti.com/',
+	'https://www.muchbetterthanthis.com/',
+	'https://www.stagnationmeansdecline.com/',
+	'http://scrollbars97.leegte.org/',
+	'http://www.scrollbarcomposition.com/',
+	'https://www.superbad.com/',
+	'https://wwwwwwwww.jodi.org',
+	'https://www.mouchette.org/fly/index.html',
+	'https://therevolvinginternet.com/'
+];
+
+function random_art(element){
+	console.log("element: ", element);
+	element.preventDefault
+	const random_url = art_sites[Math.floor(Math.random() * art_sites.length)];
+	console.log("in random_art. url: ", random_url);
+	pass_url(random_url);
+	location.href = random_url;
+	return false;
+}
+
 
 </script>
 </body>
@@ -200,6 +350,11 @@ Because of the iframe system some website won't work in this browser (like youtu
         if (!window.navigator.onLine && !RegExp("^candle:/*").test(url)) return ["data:text/html," + encodeURI(this.protocols.offline), "Not Connected"];
         if (url.startsWith("//")) return ["https://" + url.substring(2), false];
 
+		let search_url = window.extension_browser_search_url;
+		if(!search_url){
+			search_url = "https://swisscows.com/en/web?query=";
+		}
+
         if (/^\S*:/i.test(url)) {
             for (let i = 0; i < Object.keys(this.protocols).length; i++) {
                 const protocol = Object.keys(this.protocols)[i];
@@ -216,7 +371,10 @@ Because of the iframe system some website won't work in this browser (like youtu
 							if(clean_url.indexOf('#') != -1){
 								clean_url = clean_url.substring(0, clean_url.indexOf('#'));
 							}
-							list_html += '<li><a href="' + clean_url + '" rel="noreferrer">' + clean_url.replace('https://','') + '</a></li>';
+							if(clean_url.indexOf(search_url) == -1){
+								list_html += '<li><a href="' + clean_url + '" rel="noreferrer">' + clean_url.replace('https://','') + '</a></li>';
+							}
+							
 						}
 						list_html += '</ul></div>';
 						new_tab_html = new_tab_html.replace('<!-- recent_urls //-->',list_html);
@@ -244,7 +402,8 @@ Because of the iframe system some website won't work in this browser (like youtu
                 return ["https://" + url, false];
             }
             else {
-                return [encodeURI("https://swisscows.com/en/web?query=" + url.replace(" ", "+")), false];
+				
+                return [encodeURI(search_url + url.replace(" ", "+")), false];
 				
 				// 
 				// https://metager.org/meta/meta.ger3?eingabe=
@@ -259,6 +418,7 @@ Because of the iframe system some website won't work in this browser (like youtu
 
     // BORDER API
     addTab(tab) {
+		console.warn("\n\n in addTab. tab: ",tab);
         if (!tab)
             throw new Error("You have to add an object for creating a tab.");
         if (!tab.url) tab.url = this.#Files.config.browser.defaultPage;
@@ -270,9 +430,11 @@ Because of the iframe system some website won't work in this browser (like youtu
         tabElement.classList.add("nodrag");
         tabElement.dataset.id = this.generateId();
         tabElement.dataset.url = tab.url;
+		// 
         tabElement.innerHTML =
             `
-<div class='extension-browser-border-title'>Empty</div>
+<div style="display:flex;align-items:center;overflow:hidden"><img class="extension-browser-border-favicon" scr="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==" onload="this.style.display='inline-block'" />
+<div class='extension-browser-border-title'>New tab</div></div>
 <div class='extension-browser-border-close-btn'>
 <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 43 43" fill="none">
 <path class="extension-browser-border-svg-icon-close" d="M28.2843 21.2132L42.4264 7.07107L35.3553 1.19209e-06L21.2132 14.1421L7.07107 0L1.19209e-06 7.07107L14.1421 21.2132L0 35.3553L7.07107 42.4264L21.2132 28.2843L35.3553 42.4264L42.4264 35.3553L28.2843 21.2132Z" fill="#66239A"/>
@@ -284,12 +446,15 @@ Because of the iframe system some website won't work in this browser (like youtu
             this.setCurrent(tabElement.dataset.id);
         });
 
+		/*
         tabElement.addEventListener("contextmenu", (e) => {
+			console.log("tab context menu click detected");
             const tabIndex = Array.prototype.indexOf.call(
                 tabElement.parentNode.children,
                 tabElement
             );
         });
+		*/
 
         tabElement
             .querySelector(".extension-browser-border-close-btn")
@@ -298,11 +463,10 @@ Because of the iframe system some website won't work in this browser (like youtu
             });
 
         this.#browserBody.querySelector("#extension-browser-border-tab-container").appendChild(tabElement);
-        // <
 
 		let sandbox_vars = 'allow-scripts allow-forms allow-same-origin';
 		if(window.extension_browser_kiosk == false){
-			sandbox_vars += ' allow-popups-to-escape-sandbox';
+			sandbox_vars += ' allow-popups allow-popups allow-popups-to-escape-sandbox';
 		}
 		//console.log("browser addon: sandbox_vars: ", sandbox_vars);
         // Create an html view tab
@@ -310,6 +474,35 @@ Because of the iframe system some website won't work in this browser (like youtu
         viewElement.classList.add("extension-browser-border-view");
         viewElement.dataset.id = tabElement.dataset.id;
 		viewElement.setAttribute('sandbox',sandbox_vars);
+		
+		
+		let search_url = window.extension_browser_search_url;
+		if(!search_url){
+			search_url = "https://swisscows.com/en/web?query=";
+		}
+		if(!window.extension_browser_restoring_tabs){
+			let new_tab_html = this.protocols['newtab'];
+			let list_html = '<div id="extension-browser-recent-urls-container"><h3>History</h3><ul>';
+			for(let h=0; h < window.extension_browser_recent_urls.length; h++){
+				let clean_url = window.extension_browser_recent_urls[h];
+				if(clean_url.indexOf('#') != -1){
+					clean_url = clean_url.substring(0, clean_url.indexOf('#'));
+				}
+				if(clean_url.indexOf(search_url) == -1){
+					list_html += '<li><a href="' + clean_url + '" rel="noreferrer" onclick="pass_url(this);">' + clean_url.replace('https://','') + '</a></li>';
+				}
+			
+			}
+			list_html += '</ul></div>';
+			new_tab_html = new_tab_html.replace('<!-- recent_urls //-->',list_html);
+		
+			viewElement.srcdoc = new_tab_html;
+		}
+		
+		
+		//viewElement.contentWindow.document.open();
+		//viewElement.contentWindow.document.write(new_tab_html);
+		//viewElement.contentWindow.document.close();
 		
 		viewElement.onload = () => {
 			//console.log("iframe loaded.. maybe");
@@ -323,9 +516,7 @@ Because of the iframe system some website won't work in this browser (like youtu
 			  console.log(`${entry.name}'s startTime: ${entry.startTime}`);
 			});
 			*/
-			      
-			
-			
+			/*
 			setTimeout( () => {
 				
 				
@@ -334,21 +525,43 @@ Because of the iframe system some website won't work in this browser (like youtu
 						.querySelector(".extension-browser-border-view.extension-browser-border-current");
 				
 				const iframe_src = ifr.src;
+				//console.log("new iframe_src = ", iframe_src)
 				//const iframe_href = ifr.contentWindow.location.href;
+				
+				
+				
 				
 				//console.log("loaded iframe_src: ", iframe_src);
 				//console.log("iframe_href: ", iframe_href);
 				
-				if(!iframe_src.startsWith('data:')){
+				if(iframe_src.startsWith('data:')){
 					//console.warn("iframe_src DID NOT start with data: ", iframe_src);
 					//this.grab(iframe_src);
 				}
 				else{
 					//console.warn("iframe src started with 'data:'");
 					//console.log(decodeURI(iframe_src));
+					
+					//const iframeReference = document.getElementById("iframe_id");
+					//const iframeUrl = viewElement ? new URL(viewElement.src) : undefined;
+					if (iframeUrl) {
+						//console.log("Voila: " + iframeUrl);
+					} else {
+						//console.warn("iframe with id iframe_id not found");
+					}
+					
 				}
 				
 			},200);
+			*/
+			/*
+			window.onmessage = function(e) {
+			    if (e.data == 'hello') {
+			        alert('It works!');
+			    }
+			};
+			*/
+			
 			
 		}
 		
@@ -359,46 +572,77 @@ Because of the iframe system some website won't work in this browser (like youtu
 
         // After Created Action
         if (tab.current) this.setCurrent(tabElement.dataset.id);
-        this.reloadTab();
+        if(window.extension_browser_restoring_tabs){
+        	this.reloadTab();
+        }
+		
+		
+		
         // <
 
         this.#tabNb++;
         this.#tabId.push(tabElement.dataset.id);
+		
+		return true;
     }
 
     setCurrent(id) {
-		//console.log("setCurrent. id: ", id);
+		//console.log("in setCurrent. id: ", id);
         try {
-            for (let tab of this.#browserBody
-                .querySelector("#extension-browser-border-tab-container")
-                .querySelectorAll(".extension-browser-border-tab")) {
-                tab.classList.remove("extension-browser-border-current");
-            }
-            this.#browserBody
+            
+			
+			const new_current_tab_el = this.#browserBody.querySelector('.extension-browser-border-tab[data-id~="' + id + '"]');
+			//console.log("setCurrent: new_current_tab_el: ", new_current_tab_el);
+			if(new_current_tab_el){
+				
+	            for (let tab of this.#browserBody
+	                .querySelector("#extension-browser-border-tab-container")
+	                .querySelectorAll(".extension-browser-border-tab")) {
+	                tab.classList.remove("extension-browser-border-current");
+	            }
+				
+            	this.#browserBody
                 .querySelector('.extension-browser-border-tab[data-id~="' + id + '"]')
                 .classList.add("extension-browser-border-current");
 
-            for (let view of this.#browserBody
+            	for (let view of this.#browserBody
                 .querySelector("#extension-browser-border-view-container")
                 .querySelectorAll(".extension-browser-border-view")) {
                 view.classList.remove("extension-browser-border-current");
-            }
-            this.#browserBody
+            	}
+            	this.#browserBody
                 .querySelector('.extension-browser-border-view[data-id~="' + id + '"]')
                 .classList.add("extension-browser-border-current");
 
-            this.#browserBody.querySelector("#extension-browser-border-searchbar").value = this.#browserBody.querySelector(
+            	this.#browserBody.querySelector("#extension-browser-border-searchbar").value = this.#browserBody.querySelector(
                 ".extension-browser-border-tab.extension-browser-border-current"
-            ).dataset.url;
-        } catch { }
+            	).dataset.url;	
+			
+			}
+            
+        } catch (e){ 
+			console.error("setCurrent error: ", e);
+		}
     }
 
     removeTab(id) {
+		//console.log("in removetTab. id: ", id);
         if (!id) throw new Error("Specify a correct ID");
 
         this.#tabNb--;
+		//console.log("removeTab: this.#tabNb: ", this.#tabNb);
+		
+		//console.log("this.#tabId list: ", this.#tabId);
+		
+		let id_to_the_left = null;
+		if(this.#tabId.indexOf(id) > 0){
+			id_to_the_left = this.#tabId[ this.#tabId.indexOf(id)-1 ];
+			//console.log("id_to_the_left: ", id_to_the_left);
+		}
+		
         this.#tabId.splice(this.#tabId.indexOf(id), 1);
-
+		//console.log("this.#tabId list after: ", this.#tabId);
+		
         this.#browserBody
             .querySelector("#extension-browser-border-tab-container")
             .removeChild(
@@ -409,9 +653,68 @@ Because of the iframe system some website won't work in this browser (like youtu
             .removeChild(
                 this.#browserBody.querySelector('.extension-browser-border-view[data-id~="' + id + '"]')
             );
+		
+		
+        if (this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current") == null) {
+			//console.log("current tab has disappeared, should set a new one");
+            if(id_to_the_left && this.#tabId.indexOf(id_to_the_left) != -1){
+				setTimeout(() => {
+					//console.log("setting tab to the left as new current tab: ", id_to_the_left);
+					this.setCurrent(id_to_the_left);
+					//this.reloadTab();
+				},100);
+            	;
+            }
+			else{
+				//console.log("setting first tab as new current tab: ", this.#tabId[0]);
+				this.setCurrent(this.#tabId[0]);
+				//this.reloadTab();
+			}
+			
+        }
+		else{
+			//console.log("current tab still exists");
+		}
+		
+		
+			
+		if(window.extension_browser_restore_tabs){
+			//console.log("removeTab: saving new list of currently open tabs");
+			
+			const tab_els = this.#browserBody.querySelectorAll(".extension-browser-border-tab");
+			window.extension_browser_open_tabs = [];
+			for(let i=0; i < tab_els.length; i++){
+				if(!tab_els[i].dataset.url.startsWith('data:') && !tab_els[i].dataset.url.startsWith('candle:')){
+					window.extension_browser_open_tabs.push(tab_els[i].dataset.url);
+				}
+			}
+			//console.log("open tabs: ", window.extension_browser_open_tabs);
+			//console.log("open tabs list: ", window.extension_browser_open_tabs);
+			localStorage.setItem("extension_browser_open_tabs",JSON.stringify(window.extension_browser_open_tabs));
+		}
+		
+		let all_tabs = this.#browserBody
+	    	.querySelector("#extension-browser-border-tab-container")
+			.querySelectorAll(".extension-browser-border-tab");
+		
+		//console.log("all_tabs.length: ", all_tabs.length);
+			
+		if(all_tabs.length == 0){
+			//console.log("there were no tabs. creating a new empty tab");
+	        this.addTab();
+	    }
+		
+			
     }
 
     reloadTab() {
+		
+		const current_dataset_url = this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url;
+		console.log("reloadTab: current_dataset_url: ", current_dataset_url);
+		if(!current_dataset_url){
+			console.error("reloadTab: no dataset.url?");
+		}
+		
         if (
             !this.#handleURI(
                 this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
@@ -433,13 +736,47 @@ Because of the iframe system some website won't work in this browser (like youtu
                     .querySelector("#extension-browser-border-tab-container")
                     .querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
         		)[0];
+		console.log("reloadTab: url: ", url);
+				
+		let search_url = window.extension_browser_search_url;
+		if(!search_url){
+			search_url = "https://swisscows.com/en/web?query=";
+		}
+		
+		if(!url.startsWith("data:")){
+			let favicon_url = url;
+		    var a = document.createElement('a');
+		    a.href = favicon_url;
+			if(url.startsWith('http://')){
+				favicon_url = 'http://' + a.hostname;
+			}
+			else{
+				favicon_url = 'https://' + a.hostname;
+			}
+			
+			console.log("favicon hostname: ", favicon_url);
+			if(!favicon_url.endsWith('/')){
+				favicon_url = favicon_url + '/';
+			}
+			favicon_url = favicon_url + 'favicon.ico';
+			console.log("favicon url: ", favicon_url);
+			const favicon_image_el = this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current .extension-browser-border-favicon");
+			console.log("favicon image el: ", favicon_image_el);
+			if(favicon_image_el){
+				this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current .extension-browser-border-favicon").src = favicon_url;
+			}
+			
+			
+		}
+		
 		
 		//console.log("reloadTab: url: ", url);
+		// do not update history while busy restoring tabs
 		if(!url.startsWith("data:") && !window.extension_browser_restoring_tabs){
 			if(window.extension_browser_history_length){
 				//console.log("window.extension_browser_recent_urls before: ", typeof window.extension_browser_recent_urls, window.extension_browser_recent_urls);
 				
-				if(window.extension_browser_recent_urls.indexOf(url) == -1){
+				if(window.extension_browser_recent_urls.indexOf(url) == -1 && url.indexOf(search_url) == -1){
 					window.extension_browser_recent_urls.push(url);
 					if(window.extension_browser_recent_urls.length > window.extension_browser_history_length){
 						window.extension_browser_recent_urls = window.extension_browser_recent_urls.slice(-1 * window.extension_browser_history_length)
@@ -455,7 +792,7 @@ Because of the iframe system some website won't work in this browser (like youtu
 				for(let i=0; i < tab_els.length; i++){
 					window.extension_browser_open_tabs.push(tab_els[i].dataset.url);
 				}
-				//console.log("open tabs list: ", window.extension_browser_open_tabs);
+				console.log("open tabs list: ", window.extension_browser_open_tabs);
 				localStorage.setItem("extension_browser_open_tabs",JSON.stringify(window.extension_browser_open_tabs));
 			}
 			else{
@@ -464,16 +801,40 @@ Because of the iframe system some website won't work in this browser (like youtu
 		}
 		
 		
-		
-		
-		this.#browserBody
+		let iframe_el = this.#browserBody
 			.querySelector("#extension-browser-border-view-container")
-			.querySelector(".extension-browser-border-view.extension-browser-border-current").src =
-			this.#handleURI(
+			.querySelector(".extension-browser-border-view.extension-browser-border-current");
+		
+		let handled_url = this.#handleURI(
 				this.#browserBody
 					.querySelector("#extension-browser-border-tab-container")
 					.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
 			)[0];
+		
+		//console.log("reloadTab: iframe_el: ", iframe_el);
+		console.log("reloadTab: handled_url: ", handled_url);
+			
+		/*
+		if(handled_url.startsWith('data:')){
+			console.log("doing write");
+			iframe_el.contentWindow.document.open();
+			iframe_el.contentWindow.document.write(handled_url);
+			iframe_el.contentWindow.document.close();
+		}
+		else{
+			console.log("setting iframe .src");
+			iframe_el.src = handled_url;
+		}
+		*/
+		console.log("iframe_el: ", iframe_el);
+		iframe_el.src = handled_url;
+		
+		
+		
+		//this.#browserBody
+		//	.querySelector("#extension-browser-border-view-container")
+		//	.querySelector(".extension-browser-border-view.extension-browser-border-current").src =
+			
 		
 
 		/*
@@ -491,28 +852,60 @@ Because of the iframe system some website won't work in this browser (like youtu
 
         this.#browserBody.querySelector("#extension-browser-border-searchbar").blur();
 
-        if (
-            this.#handleURI(
+		let strange_url = this.#handleURI(
                 this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
             )[1]
-        ) {
-            this.#browserBody
-                .querySelector(".extension-browser-border-tab.extension-browser-border-current")
-                .querySelector(".extension-browser-border-title").innerText =
-                this.#handleURI(
-                    this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
-                )[1];
-        } else {
-            this.#browserBody
-                .querySelector(".extension-browser-border-tab.extension-browser-border-current")
-                .querySelector(".extension-browser-border-title").innerText = this.#handleURI(
-                    this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
-                )[0]
-                    .split("/")[2];
+		console.log("reloadTab: strange_url: ", strange_url);
+		/*
+		console.log("setting title");
+		if(strange_url){
+			if(typeof(strange_url) == 'string' && !strange_url.startsWith('data:')){
+		        
+			}
+			else{
+				console.error("strange_url was not a string, or started with 'data:'. Not setting title: ", strange_url);
+			}
 		}
+		*/
+
+		if(strange_url == false){
+	        if (
+	            this.#handleURI(
+	                this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
+	            )[1]
+	        ) {
+	            this.#browserBody
+	                .querySelector(".extension-browser-border-tab.extension-browser-border-current")
+	                .querySelector(".extension-browser-border-title").innerText =
+	                this.#handleURI(
+	                    this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
+	                )[1];
+	        } else {
+	            this.#browserBody
+	                .querySelector(".extension-browser-border-tab.extension-browser-border-current")
+	                .querySelector(".extension-browser-border-title").innerText = this.#handleURI(
+	                    this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url
+	                )[0]
+	                    .replace('www.','').split("/")[2];
+			}
+		}
+		else{
+			if(handled_url.startsWith("data:")){
+				
+			}
+			else{
+	    		this.#browserBody
+	        		.querySelector(".extension-browser-border-tab.extension-browser-border-current")
+					.querySelector(".extension-browser-border-title").innerText = strange_url;
+			}
+	    	
+		}
+        
+		
+        
     }
 
-	// deprecated
+	// deprecated, got html via python
 	grab(url){
         window.API.postJson(
           `/extensions/browser/api/ajax`,
@@ -547,6 +940,7 @@ Because of the iframe system some website won't work in this browser (like youtu
     }
 
     openWindow() {
+		//console.log("browser: in openWindow");
         return;
     }
 
@@ -612,14 +1006,22 @@ Because of the iframe system some website won't work in this browser (like youtu
         });
         h[2].addEventListener(
             "click",
-            () =>
-            (this.#browserBody.querySelector(".extension-browser-border-view.extension-browser-border-current").src =
-                this.#browserBody.querySelector(".extension-browser-border-view.extension-browser-border-current").src)
+            () => {
+				let current_frame_src = this.#browserBody.querySelector(".extension-browser-border-view.extension-browser-border-current").src
+				console.log("refresh: current src: ", current_frame_src);
+				this.#browserBody.querySelector(".extension-browser-border-view.extension-browser-border-current").src = current_frame_src
+            }
         );
+		
+		document.getElementById('extension-browser-border-clear-search-button').addEventListener("click", () => {
+            document.getElementById('extension-browser-border-searchbar').value = '';
+			document.getElementById('extension-browser-border-searchbar').focus();
+        });
+		
 
         this.#browserBody
             .querySelector("#extension-browser-border-add-button")
-            .addEventListener("click", () => this.addTab({ current: true }));
+			.addEventListener("click", () => this.addTab({ current: true })); // ,'url':'candle://newtab'
         this.#browserBody
             .querySelector("#extension-browser-border-search-button")
             .addEventListener("click", () => {
@@ -634,6 +1036,7 @@ Because of the iframe system some website won't work in this browser (like youtu
             .querySelector("#extension-browser-border-searchbar")
             .addEventListener("keyup", (event) => {
                 if (event.key === "Enter") {
+					console.log("enter. new url: ", this.#browserBody.querySelector("#extension-browser-border-searchbar").value);
                     this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url =
                         this.#browserBody.querySelector("#extension-browser-border-searchbar").value;
                     this.reloadTab();
@@ -678,17 +1081,24 @@ Because of the iframe system some website won't work in this browser (like youtu
 			
 			//for (const index,url in window.extension_browser_open_tabs) {
 			for(let i=0; i < window.extension_browser_open_tabs.length; i++){
-				if(i != 0){
-					this.addTab({ current: true })
+				console.log("attempting to restore: ", window.extension_browser_open_tabs[i]);
+				
+				if(!window.extension_browser_open_tabs[i].startsWith('data:') && !window.extension_browser_open_tabs[i].startsWith('candle:')){
+					if(i != 0){
+						this.addTab({ current: true })
+					}
+					this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url = this.#handleURI(window.extension_browser_open_tabs[i])[0];
+					this.reloadTab();
+					
+					
+					/*
+					this.#browserBody
+						.querySelector("#extension-browser-border-view-container")
+					.querySelector(".extension-browser-border-view.extension-browser-border-current").src = 
+					*/
 				}
 				
-				this.#browserBody.querySelector(".extension-browser-border-tab.extension-browser-border-current").dataset.url = this.#handleURI(window.extension_browser_open_tabs[i])[0];
-				this.reloadTab();
-				/*
-				this.#browserBody
-					.querySelector("#extension-browser-border-view-container")
-				.querySelector(".extension-browser-border-view.extension-browser-border-current").src = 
-				*/
+				
 			}
 			window.extension_browser_restoring_tabs = false;
 			
