@@ -71,7 +71,7 @@
     }
   },
   "short_name": "Browser",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "web_accessible_resources": [
     "css/*.css",
     "images/*.svg",
